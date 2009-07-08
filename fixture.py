@@ -64,7 +64,7 @@ class MainPage(webapp.RequestHandler):
                 
             if mentor and mentor.find(',') != -1:
                 mlastname, mfirstname = mentor.split(', ')
-                s = Faculty.gql("WHERE lastname = :1 and firstname = :2", mlastname, mfirstname)
+                s = Faculty.gql("WHERE lastname = :1", mlastname)
                 if s: student.mentor = s.get()
 
             student.put()

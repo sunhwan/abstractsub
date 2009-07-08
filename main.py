@@ -50,10 +50,11 @@ class SubmissionHandler(webapp.RequestHandler):
         abstract.abstract = cgi.escape(self.request.get('abstract'))
         abstract.put()
         
-        abstract.present_by.abstracts += 1
+        abstract.present_by.abstractSubmitted()
+        abstract.present_by.put()
         if abstract.present_by.mentor:
-            abstract.present_by.mentor.abstract += 1
-        abstract.put()
+            abstract.present_by.mentor.abstractSubmitted()
+            abstract.present_by.mentor.put()
         self.redirect("/")
 
 def main():
