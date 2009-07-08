@@ -58,6 +58,10 @@ class MainPage(webapp.RequestHandler):
             if email:
                 student.email = email
 
+            if student.firstname == 'Sunhwan' and student.lastname == 'Jo':
+                mentor = 'Guzman, Roberto N. De'
+            if mentor == 'De Guzman, Roberto': mentor = 'Guzman, Roberto N. De'
+                
             if mentor and mentor.find(',') != -1:
                 mlastname, mfirstname = mentor.split(', ')
                 s = Faculty.gql("WHERE lastname = :1 and firstname = :2", mlastname, mfirstname)
@@ -75,6 +79,12 @@ class MainPage(webapp.RequestHandler):
         student = Student.gql("WHERE lastname = :1 and firstname = :2", 'Jo', 'Sunhwan').get()
         abstract.present_by = student
         abstract.put()
+        
+        student.abstractSubmitted()
+        student.put()
+        if student.mentor:
+            student.mentor.abstractSubmitted()
+            student.mentor.put()
     
 application = webapp.WSGIApplication([('/fixtures', MainPage)],
                                      debug=True)

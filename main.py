@@ -49,6 +49,11 @@ class SubmissionHandler(webapp.RequestHandler):
         abstract.present_by = db.get(db.Key(present_by_key))
         abstract.abstract = cgi.escape(self.request.get('abstract'))
         abstract.put()
+        
+        abstract.present_by.abstracts += 1
+        if abstract.present_by.mentor:
+            abstract.present_by.mentor.abstract += 1
+        abstract.put()
         self.redirect("/")
 
 def main():

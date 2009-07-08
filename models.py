@@ -5,9 +5,14 @@ class Person(polymodel.PolyModel):
     firstname = db.StringProperty()
     lastname = db.StringProperty()
     email = db.EmailProperty()
+    abstracts = db.IntegerProperty()
     
     def __str__(self):
         return "%s %s" % (self.firstname, self.lastname)
+    
+    def abstractSubmitted(self):
+        if self.abstracts == None: self.abstracts = 1
+        else: self.abstracts += 1
 
 class Faculty(Person):
     pass

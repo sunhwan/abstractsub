@@ -10,26 +10,26 @@
       position: absolute;
       left: 0px;
       top: 0px;
-      width: 1000px;
+      width: 100%;
     }
     
     #faculty-list {
       position: absolute;
       left: 0px;
       top: 0px;
-      width: 200px;
+      width: 220px;
     }
     
     #student-list {
       position: absolute;
-      width: 200px;
+      width: 220px;
       top: 0px;
       left: 200px;
     }
     
     #abstract-list {
-      width: 600;
-      position: absolute;
+      width: 600px;
+      position: relative;
       left: 400px;
     }
     
@@ -86,24 +86,48 @@
     }
   </style>
   <script>
-    var selected_faculty;
     var selected_students = new Array();
+    var selected_faculties = new Array();
+    
+    function update_abstract() {
+      if ($('#faculty-list .selected').length || $('#student-list .selected').length) {
+        $('#abstract-list li').each(function() { $(this).hide(); });
+      } else {
+        $('#abstract-list li').each(function() { $(this).show(); });
+      }
+      
+      if ($('#faculty-list .selected').length) {
+        $('#faculty-list .selected').each(function() { $('#abstract-list [present_by='+$(this).attr('key')+']').show(); });
+      }
+      
+      if ($('#student-list .selected').length) {
+        $('#student-list .selected').each(function() { $('#abstract-list [present_by='+$(this).attr('key')+']').show(); });
+      }
+    }
     
     $(document).ready(function() {
       $("#faculty-list li").click(function() {
-        if ($(this).attr('key') == selected_faculty) {
+        if ($(this).hasClass("selected")) {
           $(this).removeClass("selected");
-          selected_faculty = null;
+          $('#student-list [mentor='+$(this).attr('key')+']').removeClass("selected");
         }
         else {
-          $("#faculty-list li[key='"+selected_faculty+"']").removeClass("selected");
-          selected_faculty = $(this).attr('key'); 
           $(this).addClass("selected");
+          $('#student-list [mentor='+$(this).attr('key')+']').addClass("selected");
         }
+        
+        update_abstract();
       });
       
       $('#student-list li').click(function() {
-        $(this).addClass("selected");
+        if ($(this).hasClass("selected")) {
+          $(this).removeClass("selected");
+        }
+        else {
+          $(this).addClass("selected");
+        }
+        
+        update_abstract();
       });
       
       $('#submit').click(function() {
@@ -126,7 +150,7 @@
       <h3>Faculty:</h3>
       <ul>
       {% for faculty in faculties %}
-        <li key='{{ faculty.key }}'>{{ faculty.lastname }}, {{ faculty.firstname}}</li>
+        <li key='{{ faculty.key }}'>{{ faculty.lastname }}, {{ faculty.firstname}} {% if faculty.abstracts %}({{ faculty.abstracts }}){% endif %}</li>
       {% endfor %}
       </ul>
     </div>
@@ -135,7 +159,7 @@
       <h3>Student:</h3>
       <ul>
       {% for student in students %}
-        <li key='{{ student.key }}' mentor='{{ student.mentor.key }}'>{{ student.lastname }}, {{ student.firstname}}</li>
+        <li key='{{ student.key }}' mentor='{{ student.mentor.key }}'>{{ student.lastname }}, {{ student.firstname}} {% if student.abstracts %}({{ student.abstracts }}){% endif %}</li>
       {% endfor %}
       </ul>
     </div>
@@ -147,7 +171,7 @@
 
       <ul>
       {% for abstract in abstracts %}
-        <li present_by='{{ abstract.present_by.key }}'>
+        <li present_by='{{ abstract.present_by.key }}' mentor='{{ abstract.present_by.mentor.key }}'>
           <span class='title'>{{ abstract.title }} - {{ abstract.present_by }}</span><br>
           <div class='abstract'>
           {{ abstract.abstract|linebreaks }}
